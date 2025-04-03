@@ -1,4 +1,4 @@
-// ignore_for_file: library_private_types_in_public_api, use_build_context_synchronously
+// ignore_for_file: library_private_types_in_public_api, use_build_context_synchronously, prefer_const_constructors
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -18,7 +18,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final _otpController = TextEditingController();
   String? _errorMessage;
   bool _obscurePassword = true;
-  bool _isOtpSent = false;
   bool _isEmailLogin = true; // Track the selected login option
 
   @override
@@ -73,9 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
         });
       },
       codeSent: (String verificationId, int? resendToken) {
-        setState(() {
-          _isOtpSent = true;
-        });
+        setState(() {});
         showDialog(
           context: context,
           builder: (context) {
@@ -117,14 +114,14 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Login',
-          style: TextStyle(fontFamily: 'Poppins'),
-        ),
-      ),
       body: Container(
-        color: Colors.grey[200],
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color.fromARGB(255, 219, 235, 246), Color(0xFFFFFFFF)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
         child: Center(
           child: SingleChildScrollView(
             child: Padding(
@@ -146,7 +143,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 90),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -181,24 +178,27 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 20),
-                  if (_isEmailLogin)
-                    Form(
-                      key: _formKey,
-                      child: Column(
-                        children: [
+                  const SizedBox(height: 30),
+                  Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        if (_isEmailLogin) ...[
                           TextFormField(
                             controller: _emailController,
                             decoration: InputDecoration(
                               labelText: 'Email',
                               labelStyle:
                                   const TextStyle(fontFamily: 'Poppins'),
-                              fillColor: Colors.grey[200],
+                              fillColor:
+                                  const Color.fromARGB(255, 255, 255, 255),
                               filled: true,
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
+                                borderRadius: BorderRadius.circular(15),
+                                borderSide: BorderSide.none,
                               ),
-                              prefixIcon: const Icon(Icons.email),
+                              prefixIcon:
+                                  const Icon(Icons.email, color: Colors.blue),
                             ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
@@ -219,17 +219,21 @@ class _LoginScreenState extends State<LoginScreen> {
                               labelText: 'Password',
                               labelStyle:
                                   const TextStyle(fontFamily: 'Poppins'),
-                              fillColor: Colors.grey[200],
+                              fillColor:
+                                  const Color.fromARGB(255, 255, 255, 255),
                               filled: true,
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
+                                borderRadius: BorderRadius.circular(15),
+                                borderSide: BorderSide.none,
                               ),
-                              prefixIcon: const Icon(Icons.lock),
+                              prefixIcon:
+                                  const Icon(Icons.lock, color: Colors.blue),
                               suffixIcon: IconButton(
                                 icon: Icon(
                                   _obscurePassword
                                       ? Icons.visibility
                                       : Icons.visibility_off,
+                                  color: Colors.blue,
                                 ),
                                 onPressed: () {
                                   setState(() {
@@ -262,67 +266,43 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                           ),
-                          const SizedBox(height: 20),
-                          SizedBox(
-                            width: double
-                                .infinity, // Make the button as wide as the fields
-                            child: ElevatedButton(
-                              onPressed: _login,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.blue,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 15),
+                        ] else ...[
+                          TextFormField(
+                            controller: _phoneController,
+                            keyboardType: TextInputType.number,
+                            maxLength: 10,
+                            decoration: InputDecoration(
+                              labelText: 'Phone Number',
+                              labelStyle:
+                                  const TextStyle(fontFamily: 'Poppins'),
+                              fillColor:
+                                  const Color.fromARGB(255, 255, 255, 255),
+                              filled: true,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                                borderSide: BorderSide.none,
                               ),
-                              child: const Text(
-                                'Login',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontFamily: 'Poppins',
-                                ),
-                              ),
+                              prefixIcon:
+                                  const Icon(Icons.phone, color: Colors.blue),
+                              counterText: '',
                             ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your phone number';
+                              }
+                              if (value.length != 10 ||
+                                  !RegExp(r'^\d{10}$').hasMatch(value)) {
+                                return 'Phone number must be exactly 10 digits';
+                              }
+                              return null;
+                            },
                           ),
                         ],
-                      ),
-                    )
-                  else
-                    Column(
-                      children: [
-                        TextFormField(
-                          controller: _phoneController,
-                          keyboardType: TextInputType.number,
-                          maxLength: 10, // Restrict input to 10 digits
-                          decoration: InputDecoration(
-                            labelText: 'Phone Number',
-                            labelStyle: const TextStyle(fontFamily: 'Poppins'),
-                            fillColor: Colors.grey[200],
-                            filled: true,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            prefixIcon: const Icon(Icons.phone),
-                            counterText: '', // Hide the character counter
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter your phone number';
-                            }
-                            if (value.length != 10 ||
-                                !RegExp(r'^\d{10}$').hasMatch(value)) {
-                              return 'Phone number must be exactly 10 digits';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 10),
+                        const SizedBox(height: 20),
                         SizedBox(
-                          width: double
-                              .infinity, // Make the button as wide as the fields
+                          width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: _sendOtp,
+                            onPressed: _isEmailLogin ? _login : _sendOtp,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue,
                               shape: RoundedRectangleBorder(
@@ -341,6 +321,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ],
                     ),
+                  ),
                   const SizedBox(height: 10),
                   if (_errorMessage != null)
                     Text(

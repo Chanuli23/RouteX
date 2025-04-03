@@ -1,11 +1,36 @@
-import 'package:flutter/material.dart';
+// ignore_for_file: library_private_types_in_public_api
 
-class SettingsScreen extends StatelessWidget {
+import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+
+class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
 
-  void _navigateTo(BuildContext context, String route) {
-    Navigator.pop(context); // Close the drawer
-    Navigator.pushNamed(context, route);
+  @override
+  _SettingsScreenState createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  bool _notificationsEnabled = true;
+  bool _darkModeEnabled = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final brightness = SchedulerBinding.instance.window.platformBrightness;
+    _darkModeEnabled = brightness == Brightness.dark;
+  }
+
+  void _toggleDarkMode(bool value) {
+    setState(() {
+      _darkModeEnabled = value;
+    });
+    // Simulate applying dark mode (e.g., print statements for now)
+    if (_darkModeEnabled) {
+      print('Dark mode enabled');
+    } else {
+      print('Dark mode disabled');
+    }
   }
 
   @override
@@ -13,6 +38,7 @@ class SettingsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),
+        backgroundColor: Colors.blue,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () =>
@@ -38,38 +64,54 @@ class SettingsScreen extends StatelessWidget {
             ListTile(
               leading: const Icon(Icons.person),
               title: const Text('Deliveries'),
-              onTap: () => _navigateTo(context, '/deliveries'),
+              onTap: () => Navigator.pushNamed(context, '/deliveries'),
             ),
             ListTile(
               leading: const Icon(Icons.assessment),
               title: const Text('Completed'),
-              onTap: () => _navigateTo(context, '/completed'),
+              onTap: () => Navigator.pushNamed(context, '/completed'),
             ),
             ListTile(
               leading: const Icon(Icons.person_4_outlined),
               title: const Text('Profile'),
-              onTap: () => _navigateTo(context, '/profile'),
+              onTap: () => Navigator.pushNamed(context, '/profile'),
             ),
             ListTile(
               leading: const Icon(Icons.settings),
               title: const Text('Settings'),
-              onTap: () => _navigateTo(context, '/settings'),
+              onTap: () => Navigator.pushNamed(context, '/settings'),
             ),
             ListTile(
               leading: const Icon(Icons.admin_panel_settings),
               title: const Text('Contact admin'),
-              onTap: () => _navigateTo(context, '/contact-admin'),
+              onTap: () => Navigator.pushNamed(context, '/contact-admin'),
             ),
             ListTile(
               leading: const Icon(Icons.help),
               title: const Text('Help & Support'),
-              onTap: () => _navigateTo(context, '/help-support'),
+              onTap: () => Navigator.pushNamed(context, '/help-support'),
             ),
           ],
         ),
       ),
-      body: const Center(
-        child: Text('Settings Page'),
+      body: ListView(
+        padding: const EdgeInsets.all(16.0),
+        children: [
+          SwitchListTile(
+            title: const Text('Enable Notifications'),
+            value: _notificationsEnabled,
+            onChanged: (value) {
+              setState(() {
+                _notificationsEnabled = value;
+              });
+            },
+          ),
+          SwitchListTile(
+            title: const Text('Enable Dark Mode'),
+            value: _darkModeEnabled,
+            onChanged: _toggleDarkMode,
+          ),
+        ],
       ),
     );
   }

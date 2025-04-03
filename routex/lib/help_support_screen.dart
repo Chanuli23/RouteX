@@ -1,75 +1,63 @@
+// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
+
 import 'package:flutter/material.dart';
 
 class HelpSupportScreen extends StatelessWidget {
   const HelpSupportScreen({super.key});
-
-  void _navigateTo(BuildContext context, String route) {
-    Navigator.pop(context); // Close the drawer
-    Navigator.pushNamed(context, route);
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Help & Support'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () =>
-              Navigator.pushReplacementNamed(context, '/dashboard'),
-        ),
+        backgroundColor: Colors.blue,
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            const DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.teal,
-              ),
-              child: Text(
-                'Menu',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
+      body: ListView(
+        padding: const EdgeInsets.all(16.0),
+        children: [
+          const ListTile(
+            leading: Icon(Icons.phone, color: Colors.blue),
+            title: Text('Phone'),
+            subtitle: Text('+1234567890'),
+          ),
+          const ListTile(
+            leading: Icon(Icons.email, color: Colors.blue),
+            title: Text('Email'),
+            subtitle: Text('support@routex.com'),
+          ),
+          const Divider(),
+          const Text(
+            'FAQs',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Poppins',
+            ),
+          ),
+          const SizedBox(height: 10),
+          ExpansionTile(
+            title: const Text('How do I reset my password?'),
+            children: const [
+              Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text(
+                  'To reset your password, go to the login page and click on "Forgot Password". Follow the instructions sent to your email.',
                 ),
               ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.person),
-              title: const Text('Deliveries'),
-              onTap: () => _navigateTo(context, '/deliveries'),
-            ),
-            ListTile(
-              leading: const Icon(Icons.assessment),
-              title: const Text('Completed'),
-              onTap: () => _navigateTo(context, '/completed'),
-            ),
-            ListTile(
-              leading: const Icon(Icons.person_4_outlined),
-              title: const Text('Profile'),
-              onTap: () => _navigateTo(context, '/profile'),
-            ),
-            ListTile(
-              leading: const Icon(Icons.settings),
-              title: const Text('Settings'),
-              onTap: () => _navigateTo(context, '/settings'),
-            ),
-            ListTile(
-              leading: const Icon(Icons.admin_panel_settings),
-              title: const Text('Contact admin'),
-              onTap: () => _navigateTo(context, '/contact-admin'),
-            ),
-            ListTile(
-              leading: const Icon(Icons.help),
-              title: const Text('Help & Support'),
-              onTap: () => _navigateTo(context, '/help-support'),
-            ),
-          ],
-        ),
-      ),
-      body: const Center(
-        child: Text('Help & Support Page'),
+            ],
+          ),
+          ExpansionTile(
+            title: const Text('How do I contact support?'),
+            children: const [
+              Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text(
+                  'You can contact support via the phone number or email provided above.',
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

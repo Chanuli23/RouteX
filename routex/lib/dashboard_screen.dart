@@ -8,6 +8,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:routex/map_screen.dart';
+import 'package:routex/edit_profile_screen.dart';
+import 'package:routex/settings_screen.dart';
+import 'package:routex/help_support_screen.dart';
+import 'package:routex/emergency_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -92,85 +96,107 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final userName = user?.displayName ?? 'User';
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Dashboard',
-          style: TextStyle(
-            fontFamily: 'Poppins',
-            fontWeight: FontWeight.bold,
-            color: Colors.white, // Dashboard in white
-          ),
-        ),
-        backgroundColor: Colors.blue,
-        elevation: 0,
-        actions: [
-          PopupMenuButton<String>(
-            icon: const CircleAvatar(
-              backgroundColor: Color.fromARGB(255, 255, 255, 255),
-              child: Icon(Icons.person, color: Colors.blue),
-            ),
-            onSelected: (value) {
-              if (value == 'Edit Profile') {
-                Navigator.pushNamed(context, '/profile');
-              } else if (value == 'Settings') {
-                Navigator.pushNamed(context, '/settings');
-              } else if (value == 'Logout') {
-                _logout(context);
-              }
-            },
-            itemBuilder: (BuildContext context) => [
-              const PopupMenuItem(
-                value: 'Edit Profile',
-                child: ListTile(
-                  leading: Icon(Icons.edit, color: Colors.blue),
-                  title: Text('Edit Profile'),
-                ),
-              ),
-              const PopupMenuItem(
-                value: 'Settings',
-                child: ListTile(
-                  leading: Icon(Icons.settings, color: Colors.blue),
-                  title: Text('Settings'),
-                ),
-              ),
-              const PopupMenuItem(
-                value: 'Logout',
-                child: ListTile(
-                  leading: Icon(Icons.logout, color: Colors.blue),
-                  title: Text('Logout'),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
+      backgroundColor: Colors.white, // Set full screen background to white
       body: Column(
         children: [
-          // Welcome message and real-time date/time
+          // Welcome message and user icon in a blue box
           Container(
             width: double.infinity,
-            color: Colors.white,
+            color: Colors.blue, // Blue background for the box
             padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Welcome, $userName!',
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Poppins',
-                    color: Colors.black,
-                  ),
-                ),
-                const SizedBox(height: 5),
-                Text(
-                  _formattedDateTime,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontFamily: 'Poppins',
-                    color: Colors.black54,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Welcome, $userName!',
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Poppins',
+                            color: Colors.white, // White text for contrast
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          _formattedDateTime,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontFamily: 'Poppins',
+                            color: Colors.white70, // Slightly faded white text
+                          ),
+                        ),
+                      ],
+                    ),
+                    CircleAvatar(
+                      radius: 25, // Adjust size of the user icon
+                      backgroundColor: Colors.white, // Visible white background
+                      child: PopupMenuButton<String>(
+                        icon: const Icon(Icons.person, color: Colors.blue),
+                        onSelected: (value) {
+                          if (value == 'Edit Profile') {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const EditProfileScreen()),
+                            );
+                          } else if (value == 'Settings') {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const SettingsScreen()),
+                            );
+                          } else if (value == 'Help & Support') {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const HelpSupportScreen()),
+                            );
+                          } else if (value == 'Logout') {
+                            _logout(context);
+                          }
+                        },
+                        itemBuilder: (BuildContext context) => [
+                          const PopupMenuItem(
+                            value: 'Edit Profile',
+                            child: ListTile(
+                              leading: Icon(Icons.edit, color: Colors.blue),
+                              title: Text('Edit Profile'),
+                            ),
+                          ),
+                          const PopupMenuItem(
+                            value: 'Settings',
+                            child: ListTile(
+                              leading: Icon(Icons.settings, color: Colors.blue),
+                              title: Text('Settings'),
+                            ),
+                          ),
+                          const PopupMenuItem(
+                            value: 'Help & Support',
+                            child: ListTile(
+                              leading:
+                                  Icon(Icons.help_outline, color: Colors.blue),
+                              title: Text('Help & Support'),
+                            ),
+                          ),
+                          const PopupMenuItem(
+                            value: 'Logout',
+                            child: ListTile(
+                              leading: Icon(Icons.logout, color: Colors.blue),
+                              title: Text('Logout'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -180,24 +206,127 @@ class _DashboardScreenState extends State<DashboardScreen> {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
-              child: GridView.count(
-                crossAxisCount: 3,
-                crossAxisSpacing: 16.0,
-                mainAxisSpacing: 16.0,
-                children: const [
-                  _LocationBox(title: 'Jaffna', route: '/jaffna'),
-                  _LocationBox(title: 'Galle', route: '/galle'),
-                  _LocationBox(title: 'Anuradhapura', route: '/anuradhapura'),
-                  _LocationBox(title: 'Negombo', route: '/negombo'),
-                  _LocationBox(title: 'Colombo', route: '/colombo'),
-                  _LocationBox(title: 'Keells', route: '/keells'),
-                ],
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2, // Two boxes per row for a modern layout
+                  crossAxisSpacing: 16.0,
+                  mainAxisSpacing: 16.0,
+                  childAspectRatio:
+                      1.2, // Adjust aspect ratio for better proportions
+                ),
+                itemCount: 6, // Total number of route boxes
+                itemBuilder: (context, index) {
+                  final routes = [
+                    {
+                      'title': 'Jaffna',
+                      'route': '/jaffna',
+                      'icon': Icons.location_on
+                    },
+                    {
+                      'title': 'Galle',
+                      'route': '/galle',
+                      'icon': Icons.beach_access
+                    },
+                    {
+                      'title': 'Anuradhapura',
+                      'route': '/anuradhapura',
+                      'icon': Icons.temple_hindu
+                    },
+                    {
+                      'title': 'Negombo',
+                      'route': '/negombo',
+                      'icon': Icons.sailing
+                    },
+                    {
+                      'title': 'Colombo',
+                      'route': '/colombo',
+                      'icon': Icons.business
+                    },
+                    {
+                      'title': 'Keells',
+                      'route': '/keells',
+                      'icon': Icons.shopping_cart
+                    },
+                  ];
+
+                  final route = routes[index];
+
+                  return GestureDetector(
+                    onTap: () async {
+                      final bool? confirm = await showDialog<bool>(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text('Confirm Navigation'),
+                            content: Text(
+                                'Do you want to navigate to ${route['title']}?'),
+                            actions: [
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.of(context).pop(false),
+                                child: const Text('Cancel'),
+                              ),
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.of(context).pop(true),
+                                child: const Text('Confirm'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+
+                      if (confirm == true) {
+                        Navigator.pushNamed(context, route['route'] as String);
+                      }
+                    },
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      elevation: 6,
+                      shadowColor: Colors.blue.shade100,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [Colors.blue.shade50, Colors.blue.shade100],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              route['icon'] as IconData,
+                              size: 40,
+                              color: Colors.blue.shade700,
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              route['title'] as String,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Poppins',
+                                color: Colors.black,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
           ),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.white, // Set bottom navbar background to white
         currentIndex: _currentIndex,
         onTap: (index) {
           setState(() {
@@ -209,6 +338,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
               context,
               MaterialPageRoute(builder: (context) => const MapScreen()),
             );
+          } else if (index == 2) {
+            // Emergency button index
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const EmergencyScreen()),
+            );
           }
         },
         type: BottomNavigationBarType.fixed,
@@ -217,52 +352,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
         showUnselectedLabels: true,
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.directions_car_outlined),
+            icon: Icon(Icons.directions_car_outlined, color: Colors.black),
             label: 'Ongoing',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.map), // Changed icon to map
-            label: 'Map', // Changed label to Map
+            icon: Icon(Icons.map, color: Colors.black),
+            label: 'Map',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.help_outline),
-            label: 'Help & Support',
+            icon: Icon(Icons.warning, color: Colors.red),
+            label: 'Emergency',
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _LocationBox extends StatelessWidget {
-  final String title;
-  final String route;
-
-  const _LocationBox({required this.title, required this.route});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.pushNamed(context, route);
-      },
-      child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15),
-        ),
-        elevation: 4,
-        child: Center(
-          child: Text(
-            title,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              fontFamily: 'Poppins',
-              color: Colors.black, // Black font for location names
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
       ),
     );
   }
